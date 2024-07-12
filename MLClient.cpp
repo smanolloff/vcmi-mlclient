@@ -14,6 +14,7 @@
 // limitations under the License.
 // =============================================================================
 
+#include "Global.h"
 #include "AI/MMAI/schema/base.h"
 #include "AI/MMAI/schema/v1/constants.h"
 #include <algorithm>
@@ -156,17 +157,12 @@ std::tuple<MMAI::Schema::F_GetAction, MMAI::Schema::F_GetValue, int> loadModel(s
     torch::jit::script::Module model = torch::jit::load(modelPath);
     model.eval();
 
-    // auto version = model.get_method("get_version")({}).toInt();
-    // Temporary workaround for older models which used action offset
     auto get_version = model.find_method("get_version");
     int version;
-    int actionOffset;
     if (get_version.has_value()) {
         version = get_version.value()({}).toInt();
-        actionOffset = 0;
     } else {
         version = 2;
-        actionOffset = 1;
     }
 
     std::cout << "Loaded v" << version << " model from " << modelPath << "\n";
@@ -180,8 +176,21 @@ std::tuple<MMAI::Schema::F_GetAction, MMAI::Schema::F_GetValue, int> loadModel(s
         break; case 2:
             sizeOneHex = MMAI::Schema::V2::BATTLEFIELD_STATE_SIZE_ONE_HEX;
             nactions = MMAI::Schema::V1::N_ACTIONS;
+        break; case 3:
+            sizeOneHex = MMAI::Schema::V3::BATTLEFIELD_STATE_SIZE_ONE_HEX;
+            nactions = MMAI::Schema::V3::N_ACTIONS;
         break; default:
             throw std::runtime_error("Unknown MMAI version: " + std::to_string(version));
+    }
+
+    auto out_features = model.attr("actor").toModule().attr("out_features").toInt();
+
+    int actionOffset = 0;
+    switch(out_features) {
+    break; case 2311: actionOffset = 1;
+    break; case 2312: actionOffset = 0;
+    break; default:
+        THROW_FORMAT("Expected 2311 or 2312 out_features for actor, got: %d", out_features);
     }
 
     auto getvalue = [guard, model, sizeOneHex](const MMAI::Schema::IState * s) {
@@ -197,32 +206,42 @@ std::tuple<MMAI::Schema::F_GetAction, MMAI::Schema::F_GetValue, int> loadModel(s
         return res;
     };
 
-    auto getaction = [guard, model, actionOffset, sizeOneHex, nactions, printModelPredictions](const MMAI::Schema::IState * s) {
+    auto getaction = [guard, model, version, actionOffset, sizeOneHex, nactions, printModelPredictions](const MMAI::Schema::IState * s) {
         auto any = s->getSupplementaryData();
-        auto sup = std::any_cast<const MMAI::Schema::V1::ISupplementaryData*>(any);
 
-        if (sup->getIsBattleEnded())
+        auto ended = false;
+
+        switch(version) {
+            break; case 1:
+                   case 2:
+                ended = std::any_cast<const MMAI::Schema::V1::ISupplementaryData*>(any)->getIsBattleEnded();
+            break; case 3:
+                ended = std::any_cast<const MMAI::Schema::V3::ISupplementaryData*>(any)->getIsBattleEnded();
+            break; default:
+                throw std::runtime_error("Unknown MMAI version: " + std::to_string(version));
+        }
+
+        if (ended)
             return MMAI::Schema::ACTION_RESET;
 
         auto &src = s->getBattlefieldState();
         auto dst = MMAI::Schema::BattlefieldState{};
-        dst.reserve(src.size());
+        dst.resize(src.size());
         std::copy(src.begin(), src.end(), dst.begin());
-        auto obs = torch::from_blob(dst.data(), {11, 15, sizeOneHex}, torch::kFloat);
+
+        auto obs = version < 3
+            ? torch::from_blob(dst.data(), {11, 15, sizeOneHex}, torch::kFloat)
+            : torch::from_blob(dst.data(), {static_cast<long long>(dst.size())}, torch::kFloat);
 
         // yields no performance benefit over (safer) copy approach:
         // auto obs = torch::from_blob(const_cast<float*>(s->getBattlefieldState().data()), {11, 15, sizeOneHex}, torch::kFloat);
 
         auto intmask = std::vector<int>{};
         intmask.reserve(nactions);
-        auto skip = actionOffset; // skip first item in action mask (retreat is "hidden" from agent)
-        for (auto m : s->getActionMask()) {
-            if (skip) {
-                --skip;
-                continue;
-            }
-            intmask.push_back(static_cast<int>(m));
-        }
+        auto &boolmask = s->getActionMask();
+
+        for (auto it = boolmask.begin() + actionOffset; it != boolmask.end(); ++it)
+            intmask.push_back(static_cast<int>(*it));
 
         auto mask = torch::from_blob(intmask.data(), {static_cast<long>(intmask.size())}, torch::kInt).to(torch::kBool);
 
@@ -331,9 +350,9 @@ void validateArguments(
     }
 
     if (statsStorage != "-") {
-        auto dir = std::filesystem::path(statsStorage).parent_path();
-        if (!std::filesystem::is_directory(dir)) {
-            std::cerr << "Bad value for statsStorage: parent is not a directory: " << dir << "\n";
+        auto f = std::filesystem::path(statsStorage);
+        if (!std::filesystem::is_regular_file(f)) {
+            std::cerr << "Bad value for statsStorage: file does not exist: " << f << " (hint: use the SQLs in server/ML/sql to create it)\n";
             exit(1);
         }
     }
