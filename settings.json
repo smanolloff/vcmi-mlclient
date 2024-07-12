@@ -1,19 +1,17 @@
 {
-	"general" : {
-		"lastMap" : "MAPS/DELUGE",
-		"sound": 0,
-		"music": 0
+	"gameTweaks" : {
+		"skipBattleIntroMusic" : true
 	},
-	"gameTweaks": {
-		"skipBattleIntroMusic": true
+	"general" : {
+		"lastMap" : "MAPS/TEST-BATTLE-QUEUE",
+		"music" : 0,
+		"sound" : 0
 	},
 	"launcher" : {
 		"setupCompleted" : true
 	},
 	"logging" : {
 		"console" : {
-		"threshold": "trace",
-		"coloredOutputEnabled": true,
 			"colorMapping" : [
 				{
 					"color" : "gray",
@@ -91,7 +89,8 @@
 					"level" : "error"
 				}
 			],
-			"format" : "[%t][%n] %l %m"
+			"format" : "[%t][%n] %l %m",
+			"threshold" : "trace"
 		},
 		"loggers" : [
 			{
@@ -107,30 +106,29 @@
 				"level" : "error"
 			},
 			{
-				"domain": "rng",
-				"level": "error"
+				"domain" : "rng",
+				"level" : "error"
 			},
 			{
-				"domain": "network",
-				"level": "error"
+				"domain" : "network",
+				"level" : "error"
 			},
 			{
-				"domain": "mod",
-				"level": "error"
+				"domain" : "mod",
+				"level" : "error"
 			},
 			{
-				"domain": "animation",
-				"level": "error"
+				"domain" : "animation",
+				"level" : "error"
 			},
 			{
-				"domain": "bonus",
-				"level": "error"
+				"domain" : "bonus",
+				"level" : "error"
 			}
 		]
 	},
 	"server" : {
 		"friendlyAI" : "StupidAI",
-		"playerAI" : "MMAI",
-		"port" : 52894
+		"playerAI" : "MMAI"
 	}
 }
