@@ -856,9 +856,7 @@ void start_vcmi() {
     auto t = boost::thread(&CServerHandler::debugStartTest, CSH, mapname, false);
 
     if(headless) {
-        while (true) {
-            boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-        }
+        t.join();
     } else {
         GH.screenHandler().clearScreen();
         while(true) {
