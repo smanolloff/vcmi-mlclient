@@ -82,7 +82,7 @@ Args parse_args(int argc, char * argv[])
     bool prerecorded = false;
     int statsTimeout = 60000;
     int statsPersistFreq = 0;
-    int schemaVersion = 1;
+    int schemaVersion = 3;
     bool printModelPredictions = false;
 
     // std::vector<std::string> ais = {"StupidAI", "BattleAI", "MMAI", "MMAI_MODEL"};
@@ -158,7 +158,7 @@ Args parse_args(int argc, char * argv[])
         ("stats-persist-freq", po::value<int>()->value_name("<N>"),
             "Persist stats to storage file every N battles (read only if 0*)")
         ("schema-version", po::value<int>()->value_name("<V>"),
-            "Use specified encoding schema version (defaults to 1*)");
+            "Use specified encoding schema version (defaults to 3*)");
 
     po::variables_map vm;
 
