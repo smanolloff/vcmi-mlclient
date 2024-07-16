@@ -18,6 +18,7 @@
 #include "AI/MMAI/schema/base.h"
 #include "AI/MMAI/schema/v1/constants.h"
 #include <algorithm>
+#include <thread>
 #ifdef ENABLE_LIBTORCH
 #include <ATen/core/enum_tag.h>
 #include <ATen/core/ivalue.h>
@@ -856,7 +857,9 @@ void start_vcmi() {
     auto t = boost::thread(&CServerHandler::debugStartTest, CSH, mapname, false);
 
     if(headless) {
-        t.join();
+        while(true) {
+            std::this_thread::sleep_for(std::chrono::seconds(5));
+        }
     } else {
         GH.screenHandler().clearScreen();
         while(true) {
