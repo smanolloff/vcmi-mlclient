@@ -1,8 +1,7 @@
 {
 	"adventure" : {
 		"enemyMoveTime" : 50,
-		"heroMoveTime" : 25,
-		"scrollSpeedPixels" : 800
+		"heroMoveTime" : 25
 	},
 	"battle" : {
 		"MMAI" : {

@@ -72,6 +72,7 @@
 #include "lib/CConfigHandler.h"
 #include "render/IRenderHandler.h"
 #include "vstd/CLoggerBase.h"
+#include "windows/InfoWindows.h"
 
 static std::optional<std::string> criticalInitializationError;
 std::atomic<bool> headlessQuit = false;
@@ -96,6 +97,59 @@ MMAI::Schema::Baggage * baggage;
 #else
 #error "Unsupported OS"
 #endif
+
+[[noreturn]] static void quitApplicationImmediately(int error_code)
+{
+    // Perform quick exit without executing static destructors and let OS cleanup anything that we did not
+    // We generally don't care about them and this leads to numerous issues, e.g.
+    // destruction of locked mutexes (fails an assertion), even in third-party libraries (as well as native libs on Android)
+    // Android - std::quick_exit is available only starting from API level 21
+    // Mingw, macOS and iOS - std::quick_exit is unavailable (at least in current version of CI)
+#if (defined(__ANDROID_API__) && __ANDROID_API__ < 21) || (defined(__MINGW32__)) || defined(VCMI_APPLE)
+    ::exit(error_code);
+#else
+    std::quick_exit(error_code);
+#endif
+}
+
+void handleQuit(bool ask)
+{
+    if(!ask)
+    {
+        ML::shutdown_vcmi();
+        return;
+    }
+
+    // FIXME: avoids crash if player attempts to close game while opening is still playing
+    // use cursor handler as indicator that loading is not done yet
+    // proper solution would be to abort init thread (or wait for it to finish)
+    if (!CCS->curh)
+    {
+        ML::shutdown_vcmi();
+    }
+
+    if (LOCPLINT)
+        LOCPLINT->showYesNoDialog(CGI->generaltexth->allTexts[69], ML::shutdown_vcmi, nullptr);
+    else
+        CInfoWindow::showYesNoDialog(CGI->generaltexth->allTexts[69], {}, ML::shutdown_vcmi, {}, PlayerColor(1));
+}
+
+/// Notify user about encountered fatal error and terminate the game
+/// TODO: decide on better location for this method
+void handleFatalError(const std::string & message, bool terminate)
+{
+    logGlobal->error("FATAL ERROR ENCOUNTERED, VCMI WILL NOW TERMINATE");
+    logGlobal->error("Reason: %s", message);
+
+    std::string messageToShow = "Fatal error! " + message;
+
+    // SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal error!", messageToShow.c_str(), nullptr);
+
+    if (terminate)
+        throw std::runtime_error(message);
+    else
+        quitApplicationImmediately(1);
+}
 
 namespace ML {
     void shutdown_vcmi() {

@@ -2,45 +2,45 @@
 	"activeMods" : {
 		"ml" : {
 			"active" : true,
-			"checksum" : "b07532bb",
+			"checksum" : "061d7169",
 			"validated" : true
 		},
 		"vcmi" : {
 			"active" : true,
-			"checksum" : "f141567f",
+			"checksum" : "bdf1439b",
 			"validated" : true
 		},
 		"vcmi-extras" : {
 			"active" : true,
-			"checksum" : "dd982d0e",
+			"checksum" : "6bf06edc",
 			"mods" : {
 				"adventuremap" : {
 					"active" : true,
-					"checksum" : "90dbbb2d",
+					"checksum" : "e17c0eb0",
 					"validated" : true
 				},
 				"arrowtowericons" : {
 					"active" : true,
-					"checksum" : "da4a3243",
+					"checksum" : "abed87de",
 					"validated" : true
 				},
 				"battlefieldactions" : {
 					"active" : true,
-					"checksum" : "0e33d128",
+					"checksum" : "7f9464b5",
 					"validated" : true
 				},
 				"bonusicons" : {
 					"active" : true,
-					"checksum" : "7dc29637",
+					"checksum" : "cbaad5e5",
 					"mods" : {
 						"bonus icons" : {
 							"active" : true,
-							"checksum" : "0c24eb26",
+							"checksum" : "7d835ebb",
 							"validated" : true
 						},
 						"immunity icons" : {
 							"active" : true,
-							"checksum" : "b1515e92",
+							"checksum" : "07391d40",
 							"validated" : true
 						}
 					},
@@ -48,12 +48,12 @@
 				},
 				"extendedlobby" : {
 					"active" : true,
-					"checksum" : "03a5b0a5",
+					"checksum" : "05c699ab",
 					"validated" : true
 				},
 				"quick-exchange" : {
 					"active" : true,
-					"checksum" : "ee5b2342",
+					"checksum" : "a4a04d44",
 					"validated" : true
 				},
 				"truetypefonts" : {
@@ -67,8 +67,8 @@
 	},
 	"core" : {
 		"active" : true,
-		"checksum" : "a86f9df5",
+		"checksum" : "4f2e139d",
 		"name" : "Original game files",
-		"validated" : true
+		"validated" : false
 	}
 }
