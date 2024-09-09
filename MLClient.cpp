@@ -204,8 +204,9 @@ namespace ML {
             logConfig = nullptr;
         }
 
-        // std::cout << "Ending...\n";
-        // quitApplicationImmediately(0);
+        if(!settings["session"]["headless"].Bool()) {
+            quitApplicationImmediately(0);
+        }
     }
 
     void validateValue(std::string name, std::string value, std::vector<std::string> values) {
@@ -512,7 +513,6 @@ namespace ML {
     }
 
     void start_vcmi() {
-        auto l = std::unique_lock(mutex_shutdown);
         if (mapname == "")
             throw std::runtime_error("call init_vcmi first");
 
@@ -527,15 +527,17 @@ namespace ML {
 
         if(headless)
          {
+            auto l = std::unique_lock(mutex_shutdown);
             cond_shutdown.wait(l);
             std::cout << "VCMI shutdown complete.\n";
             t.join();
         } else {
             GH.screenHandler().clearScreen();
-            while(!cond_shutdown.wait_for(l, std::chrono::seconds(0), []{ return flag_shutdown; })) {
+            while(!flag_shutdown) {
                 GH.input().fetchEvents();
                 GH.renderFrame();
             }
+            quitApplicationImmediately(0);
         }
     }
 }
