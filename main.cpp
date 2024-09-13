@@ -32,7 +32,6 @@
 #include "AI/MMAI/schema/v1/types.h"
 #include "AI/MMAI/schema/v1/constants.h"
 
-#include "MMAILoader/TorchModel.h"
 #include "user_agents/base.h"
 #include "user_agents/agent-v1.h"
 #include "user_agents/agent-v3.h"
@@ -76,7 +75,6 @@ namespace ML {
         bool prerecorded = false;
         int statsTimeout = 60000;
         int statsPersistFreq = 0;
-        bool printModelPredictions = false;
         bool headless = false;
 
         // std::vector<std::string> ais = {"StupidAI", "BattleAI", "MMAI", "MMAI_MODEL"};
@@ -143,8 +141,6 @@ namespace ML {
                 "Replay actions from local file named actions.txt")
             ("benchmark", po::bool_switch(&benchmark),
                 "Measure performance")
-            ("print-predictions", po::bool_switch(&printModelPredictions),
-                "Print MMAI model predictions (no effect for other AIs)")
             ("stats-mode", po::value<std::string>()->value_name("<MODE>"),
                 ("Stats collection mode. " + values(STATPERSPECTIVES, omap.at("stats-mode"))).c_str())
             ("stats-storage", po::value<std::string>()->value_name("<PATH>"),
@@ -256,19 +252,21 @@ namespace ML {
         auto autorender = true;
 
         if (leftAi == AI_MMAI_USER) {
-            leftModel = new UserAgents::AgentV4(benchmark, interactive, autorender, printModelPredictions, recordings);
+            leftModel = new UserAgents::AgentV4(benchmark, interactive, autorender, false, recordings);
             // prevent double render if both models are MMAI_USER
             autorender = false;
         } else if (leftAi == AI_MMAI_MODEL) {
-            leftModel = new MMAI::TorchModel(omap.at("left-model"), false);
+            // BAI will load the model model based on settings["battle"]["MMAI"]
+            leftModel = nullptr;
         } else {
             leftModel = new ModelWrappers::Scripted(leftAi);
         }
 
         if (rightAi == AI_MMAI_USER) {
-            rightModel = new UserAgents::AgentV4(benchmark, interactive, autorender, printModelPredictions, recordings);
+            rightModel = new UserAgents::AgentV4(benchmark, interactive, autorender, false, recordings);
         } else if (rightAi == AI_MMAI_MODEL) {
-            rightModel = new MMAI::TorchModel(omap.at("right-model"), false);
+            // BAI will load the model model based on settings["battle"]["MMAI"]
+            rightModel = nullptr;
         } else {
             rightModel = new ModelWrappers::Scripted(rightAi);
         }

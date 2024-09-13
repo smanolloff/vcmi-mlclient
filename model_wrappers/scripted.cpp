@@ -32,7 +32,7 @@ namespace ML {
             return keyword;
         };
 
-        // ModelWrappers are a dummy models which have neither version,
+        // ModelWrappers are dummy models which have neither version,
         // getAction nor getValue. They are only used as a temporary IModel
         // objects and are used for their name (e.g. StupidAI, BattleAI, etc.)
         // which is then used for creating the corresponding AI.

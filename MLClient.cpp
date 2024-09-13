@@ -333,7 +333,6 @@ namespace ML {
     void processArguments(InitArgs &a) {
         headless = a.headless;
         baggage = new MMAI::Schema::Baggage;
-        baggage->devMode = true;
         baggage->modelLeft = a.leftModel;
         baggage->modelRight = a.rightModel;
 
