@@ -28,6 +28,10 @@ namespace ML {
           , f_getAction(f_getAction)
           , f_getValue(f_getValue) {};
 
+        MMAI::Schema::ModelType Function::getType() {
+            return MMAI::Schema::ModelType::USER;
+        };
+
         std::string Function::getName() {
             return name;
         }

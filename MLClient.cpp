@@ -20,6 +20,7 @@
 #include "AI/MMAI/schema/v1/constants.h"
 #include <algorithm>
 #include <condition_variable>
+#include <ios>
 #include <mutex>
 #include <thread>
 #include <cstdio>

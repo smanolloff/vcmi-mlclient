@@ -29,6 +29,7 @@ namespace ML {
             , verbose(verbose_)
             , actions(actions_) {};
 
+            MMAI::Schema::ModelType getType() override { return MMAI::Schema::ModelType::USER; };
             std::string getName() override { return ""; };
             int getVersion() override { return 0; };
             int getAction(const MMAI::Schema::IState * s) override { return 0; };

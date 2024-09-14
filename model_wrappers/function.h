@@ -29,6 +29,7 @@ namespace ML {
                 std::function<double(const MMAI::Schema::IState*)> f_getValue
             );
 
+            MMAI::Schema::ModelType getType() override;
             std::string getName() override;
             int getVersion() override;
             int getAction(const MMAI::Schema::IState * s) override;

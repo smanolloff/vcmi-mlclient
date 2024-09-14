@@ -32,10 +32,15 @@ namespace ML {
             return keyword;
         };
 
-        // ModelWrappers are dummy models which have neither version,
-        // getAction nor getValue. They are only used as a temporary IModel
-        // objects and are used for their name (e.g. StupidAI, BattleAI, etc.)
-        // which is then used for creating the corresponding AI.
+        MMAI::Schema::ModelType Scripted::getType() {
+            return MMAI::Schema::ModelType::SCRIPTED;
+        };
+
+        // The below methods should never be called on this object:
+        // SCRIPTED models are dummy models which should not be used for anything
+        // other than their getType() and getName() methods. Based on the return
+        // value, the corresponding scripted bot (e.g. StupidAI) should be
+        // used for the upcoming battle instead.
 
         int Scripted::getVersion() {
             warn("getVersion", -666);
