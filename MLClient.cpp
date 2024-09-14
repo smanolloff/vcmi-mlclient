@@ -357,6 +357,9 @@ namespace ML {
         Settings(settings.write({"server", "ML", "statsPersistFreq"}))->Integer() = a.statsPersistFreq;
         Settings(settings.write({"server", "ML", "statsLoglevel"}))->String() = a.loglevelStats;
 
+        Settings(settings.write({"battle", "MMAI", "leftModel"}))->String() = a.leftModelFile;
+        Settings(settings.write({"battle", "MMAI", "rightModel"}))->String() = a.rightModelFile;
+
         // Set all adventure AIs to AAI, which always create BAIs
         Settings(settings.write({"server", "playerAI"}))->String() = "MMAI";
         Settings(settings.write({"server", "oneGoodAI"}))->Bool() = false;

@@ -246,8 +246,10 @@ namespace ML {
         auto leftAi = omap.at("left-ai");
         auto rightAi = omap.at("right-ai");
 
-        MMAI::Schema::IModel * leftModel;
-        MMAI::Schema::IModel * rightModel;
+        MMAI::Schema::IModel * leftModel = nullptr;
+        MMAI::Schema::IModel * rightModel = nullptr;
+        std::string leftModelFile = "";
+        std::string rightModelFile = "";
 
         auto autorender = true;
 
@@ -257,7 +259,7 @@ namespace ML {
             autorender = false;
         } else if (leftAi == AI_MMAI_MODEL) {
             // BAI will load the model model based on settings["battle"]["MMAI"]
-            leftModel = nullptr;
+            leftModelFile = omap.at("left-model");
         } else {
             leftModel = new ModelWrappers::Scripted(leftAi);
         }
@@ -266,7 +268,7 @@ namespace ML {
             rightModel = new UserAgents::AgentV4(benchmark, interactive, autorender, false, recordings);
         } else if (rightAi == AI_MMAI_MODEL) {
             // BAI will load the model model based on settings["battle"]["MMAI"]
-            rightModel = nullptr;
+            rightModelFile = omap.at("right-model");
         } else {
             rightModel = new ModelWrappers::Scripted(rightAi);
         }
@@ -275,6 +277,8 @@ namespace ML {
             omap.at("map"),
             leftModel,
             rightModel,
+            leftModelFile,
+            rightModelFile,
             maxBattles,
             seed,
             randomHeroes,
