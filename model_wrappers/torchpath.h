@@ -20,12 +20,9 @@
 
 namespace ML {
     namespace ModelWrappers {
-        // This is basically a clone of MMAI::BAI::FallbackModel
-        // However, the MMAI class cannot be instantiated here
-        // (the library is dynamically loaded later)
-        class MMAI_DLL_LINKAGE Scripted : public MMAI::Schema::IModel {
+        class MMAI_DLL_LINKAGE TorchPath : public MMAI::Schema::IModel {
         public:
-            Scripted(std::string name);
+            TorchPath(std::string path);
 
             MMAI::Schema::ModelType getType() override;
             std::string getName() override;
@@ -33,7 +30,7 @@ namespace ML {
             int getAction(const MMAI::Schema::IState * s) override;
             double getValue(const MMAI::Schema::IState * s) override;
         private:
-            std::string name;
+            std::string path;
             void warn(std::string m, int retval);
         };
     }

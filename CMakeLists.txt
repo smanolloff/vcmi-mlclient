@@ -8,6 +8,8 @@ add_library(mlclient SHARED
   model_wrappers/function.cpp
   model_wrappers/scripted.h
   model_wrappers/scripted.cpp
+  model_wrappers/torchpath.h
+  model_wrappers/torchpath.cpp
   MLClient.cpp
   MLClient.h
 )

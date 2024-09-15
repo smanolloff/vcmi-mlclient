@@ -329,6 +329,27 @@ namespace ML {
             std::cerr << "Bad value for loglevelStats: " << a.loglevelStats << "\n";
             exit(1);
         }
+
+        // Prevent misconfigured paths at boot during ML training
+        for (auto &model : {a.leftModel, a.rightModel}) {
+            if (model->getType() != MMAI::Schema::ModelType::TORCH_PATH)
+                continue;
+
+            bool resolved = false;
+            for (auto dirpath : VCMIDirs::get().dataPaths()) {
+                auto abspath = dirpath / "torchmodels" / model->getName();
+                std::cout << "Trying " << abspath.string()  << " (cwd: " << fs::current_path().string() << ")\n";
+                if (boost::filesystem::is_regular_file(abspath)) {
+                    resolved = true;
+                    break;
+                }
+            }
+
+            if (!resolved) {
+                std::cerr << "Bad torch model path: " << model->getName() << "\n";
+                exit(1);
+            }
+        }
     }
 
     void processArguments(InitArgs &a) {
@@ -356,9 +377,6 @@ namespace ML {
         Settings(settings.write({"server", "ML", "statsTimeout"}))->Integer() = a.statsTimeout;
         Settings(settings.write({"server", "ML", "statsPersistFreq"}))->Integer() = a.statsPersistFreq;
         Settings(settings.write({"server", "ML", "statsLoglevel"}))->String() = a.loglevelStats;
-
-        Settings(settings.write({"battle", "MMAI", "leftModel"}))->String() = a.leftModelFile;
-        Settings(settings.write({"battle", "MMAI", "rightModel"}))->String() = a.rightModelFile;
 
         // Set all adventure AIs to AAI, which always create BAIs
         Settings(settings.write({"server", "playerAI"}))->String() = "MMAI";
@@ -421,8 +439,6 @@ namespace ML {
     }
 
     void init_vcmi(InitArgs &a) {
-        validateArguments(a);
-
         // Store original shell workdir (as VCMI will chdir to VCMI_BIN_DIR)
         // The original workdir is used for loading models specified by relative paths
         // (then is again changed to VCMI_BIN_DIR to prevent VCMI errors)
@@ -439,6 +455,9 @@ namespace ML {
 
         // XXX: apparently this needs to be invoked before Settings() stuff
         preinitDLL(::console, false);
+
+        // validating after preinitDLL as the VCMIDirs are not initialized before it
+        validateArguments(a);
 
         fs::current_path(wd);
 

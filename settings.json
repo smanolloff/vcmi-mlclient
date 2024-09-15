@@ -4,11 +4,6 @@
 		"heroMoveTime" : 25
 	},
 	"battle" : {
-		"MMAI" : {
-			"leftModel" : "/Users/simo/Projects/vcmi-gym/rl/models/Attacker model:v9/jit-agent.pt",
-			"rightModel" : "/Users/simo/Projects/vcmi-gym/rl/models/agent.pt:v7164/jit-agent.pt",
-			"verbose" : true
-		},
 		"rangeLimitHighlightOnHover" : true,
 		"speedFactor" : 5,
 		"stickyHeroInfoWindows" : false

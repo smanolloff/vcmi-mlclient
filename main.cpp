@@ -26,6 +26,7 @@
 #include "AI/MMAI/schema/base.h"
 #include "ML/model_wrappers/function.h"
 #include "ML/model_wrappers/scripted.h"
+#include "ML/model_wrappers/torchpath.h"
 #include "MLClient.h"
 
 #include "AI/MMAI/schema/schema.h"
@@ -204,7 +205,6 @@ namespace ML {
         if (vm.count("stats-persist-freq"))
             statsPersistFreq = vm.at("stats-persist-freq").as<int>();
 
-
         std::vector<int> recordings = {};
 
         if (prerecorded) {
@@ -258,8 +258,8 @@ namespace ML {
             // prevent double render if both models are MMAI_USER
             autorender = false;
         } else if (leftAi == AI_MMAI_MODEL) {
-            // BAI will load the model model based on settings["battle"]["MMAI"]
-            leftModelFile = omap.at("left-model");
+            // BAI will load the actual model based on leftModel->getName()
+            leftModel = new ModelWrappers::TorchPath(omap.at("left-model"));
         } else {
             leftModel = new ModelWrappers::Scripted(leftAi);
         }
@@ -267,8 +267,8 @@ namespace ML {
         if (rightAi == AI_MMAI_USER) {
             rightModel = new UserAgents::AgentV4(benchmark, interactive, autorender, false, recordings);
         } else if (rightAi == AI_MMAI_MODEL) {
-            // BAI will load the model model based on settings["battle"]["MMAI"]
-            rightModelFile = omap.at("right-model");
+            // BAI will load the actual model based on leftModel->getName()
+            rightModel = new ModelWrappers::TorchPath(omap.at("right-model"));
         } else {
             rightModel = new ModelWrappers::Scripted(rightAi);
         }
@@ -277,8 +277,6 @@ namespace ML {
             omap.at("map"),
             leftModel,
             rightModel,
-            leftModelFile,
-            rightModelFile,
             maxBattles,
             seed,
             randomHeroes,

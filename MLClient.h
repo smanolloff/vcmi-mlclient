@@ -56,8 +56,6 @@ namespace ML {
             std::string mapname,
             MMAI::Schema::IModel * leftModel,
             MMAI::Schema::IModel * rightModel,
-            std::string leftModelFile,
-            std::string rightModelFile,
             int maxBattles,
             int seed,
             int randomHeroes,
@@ -78,8 +76,6 @@ namespace ML {
         ) : mapname(mapname)
           , leftModel(leftModel)
           , rightModel(rightModel)
-          , leftModelFile(leftModelFile)
-          , rightModelFile(rightModelFile)
           , maxBattles(maxBattles)
           , seed(seed)
           , randomHeroes(randomHeroes)

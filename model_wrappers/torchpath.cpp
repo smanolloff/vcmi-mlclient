@@ -14,50 +14,45 @@
 // limitations under the License.
 // =============================================================================
 
-#include "scripted.h"
+#include "torchpath.h"
 #include "ML/MLClient.h"
 #include <stdexcept>
 
 namespace ML {
     namespace ModelWrappers {
-        Scripted::Scripted(std::string name)
-        : name(name) {
-            auto it = std::find(AIS.begin(), AIS.end(), name);
-            if (it == AIS.end()) {
-                throw std::runtime_error("Unsupported scripted AI name: " + name);
-            }
+        TorchPath::TorchPath(std::string path)
+        : path(path) {};
+
+        std::string TorchPath::getName() {
+            return path;
         };
 
-        std::string Scripted::getName() {
-            return name;
-        };
-
-        MMAI::Schema::ModelType Scripted::getType() {
-            return MMAI::Schema::ModelType::SCRIPTED;
+        MMAI::Schema::ModelType TorchPath::getType() {
+            return MMAI::Schema::ModelType::TORCH_PATH;
         };
 
         // The below methods should never be called on this object:
-        // SCRIPTED models are dummy models which should not be used for anything
+        // TORCH_PATH models are dummy models which should not be used for anything
         // other than their getType() and getName() methods. Based on the return
-        // value, the corresponding scripted bot (e.g. StupidAI) should be
-        // used for the upcoming battle instead.
+        // value, a real Torch model should be loaded and used for the
+        // upcoming battle instead.
 
-        int Scripted::getVersion() {
+        int TorchPath::getVersion() {
             warn("getVersion", -666);
             return -666;
         };
 
-        int Scripted::getAction(const MMAI::Schema::IState * s) {
+        int TorchPath::getAction(const MMAI::Schema::IState * s) {
             warn("getAction", -666);
             return -666;
         };
 
-        double Scripted::getValue(const MMAI::Schema::IState * s) {
+        double TorchPath::getValue(const MMAI::Schema::IState * s) {
             warn("getValue", -666);
             return -666;
         };
 
-        void Scripted::warn(std::string m, int retval) {
+        void TorchPath::warn(std::string m, int retval) {
             printf("WARNING: method %s called on a ModelWrapper object; returning %d\n", m.c_str(), retval);
         }
     }
