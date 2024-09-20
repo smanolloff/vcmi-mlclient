@@ -14,19 +14,10 @@
 // limitations under the License.
 // =============================================================================
 
+#include "StdInc.h"
 #include "CMT.h"
-#include "Global.h"
 #include "AI/MMAI/schema/base.h"
 #include "AI/MMAI/schema/v1/constants.h"
-#include <algorithm>
-#include <condition_variable>
-#include <ios>
-#include <mutex>
-#include <thread>
-#include <cstdio>
-#include <iostream>
-#include <dlfcn.h>
-#include <filesystem>
 
 #include <boost/thread.hpp>
 #include <boost/filesystem.hpp>
@@ -361,9 +352,12 @@ namespace ML {
         Settings(settings.write({"adventure", "quickCombat"}))->Bool() = headless;
         Settings(settings.write({"session", "headless"}))->Bool() = headless;
         Settings(settings.write({"session", "onlyai"}))->Bool() = headless;
-        Settings(settings.write({"server", "seed"}))->Integer() = a.seed;
         Settings(settings.write({"server", "localPort"}))->Integer() = 0;
         Settings(settings.write({"server", "useProcess"}))->Bool() = false;
+        Settings(settings.write({"server", "seed"}))->Integer() = a.seed;
+        // Re-use seed from global server config
+        // (the ML server plugin uses a different RNG)
+        Settings(settings.write({"server", "ML", "seed"}))->Integer() = a.seed;
         Settings(settings.write({"server", "ML", "maxBattles"}))->Integer() = a.maxBattles;
         Settings(settings.write({"server", "ML", "randomHeroes"}))->Integer() = a.randomHeroes;
         Settings(settings.write({"server", "ML", "randomObstacles"}))->Integer() = a.randomObstacles;
