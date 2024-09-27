@@ -22,6 +22,7 @@
 #include <boost/thread.hpp>
 #include <boost/filesystem.hpp>
 #include <stdexcept>
+#include <condition_variable>
 
 #include "AI/MMAI/schema/schema.h"
 #include "ExceptionsCommon.h"
@@ -326,17 +327,10 @@ namespace ML {
             if (model->getType() != MMAI::Schema::ModelType::TORCH_PATH)
                 continue;
 
-            bool resolved = false;
-            for (auto dirpath : VCMIDirs::get().dataPaths()) {
-                auto abspath = dirpath / "torchmodels" / model->getName();
-                std::cout << "Trying " << abspath.string()  << " (cwd: " << fs::current_path().string() << ")\n";
-                if (boost::filesystem::is_regular_file(abspath)) {
-                    resolved = true;
-                    break;
-                }
-            }
+            auto rpath = ResourcePath(model->getName());
+            auto loaders = CResourceHandler::get()->getResourcesWithName(rpath);
 
-            if (!resolved) {
+            if (loaders.size() != 1) {
                 std::cerr << "Bad torch model path: " << model->getName() << "\n";
                 exit(1);
             }
