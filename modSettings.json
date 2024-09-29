@@ -1,7 +1,7 @@
 {
 	"activeMods" : {
 		"ml" : {
-			"active" : true,
+			"active" : false,
 			"checksum" : "061d7169",
 			"validated" : true
 		},
