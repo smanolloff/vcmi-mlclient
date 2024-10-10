@@ -331,7 +331,7 @@ namespace ML {
             auto loaders = CResourceHandler::get()->getResourcesWithName(rpath);
 
             if (loaders.size() != 1) {
-                std::cerr << "Bad torch model path: " << model->getName() << "\n";
+                std::cerr << "Bad torch model path: " << model->getName() << "\nMust be a valid VCMI filesystem path, e.g. MMAI/models/defender-v5.pt";
                 exit(1);
             }
         }

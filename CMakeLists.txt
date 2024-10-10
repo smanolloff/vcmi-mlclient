@@ -39,6 +39,11 @@ enable_pch(mlclient-cli)
 install(TARGETS mlclient DESTINATION ${BIN_DIR})
 install(TARGETS mlclient-cli DESTINATION ${BIN_DIR})
 
-# Convenience to enable relative paths prefixed with vcmi-gym/
-# file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-# file(CREATE_LINK ${CMAKE_SOURCE_DIR}/vcmi-gym ${CMAKE_BINARY_DIR}/bin/vcmi-gym SYMBOLIC)
+add_custom_command(
+    TARGET mlclient          # Replace with the actual target name
+    POST_BUILD               # Execute after the target is built
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+    ${CMAKE_SOURCE_DIR}/data
+    ${CMAKE_BINARY_DIR}/bin/data
+    COMMENT "symlink ${CMAKE_BINARY_DIR}/bin/data -> ${CMAKE_SOURCE_DIR}/data"
+)
