@@ -66,6 +66,8 @@ namespace ML {
         int seed = 0;
         int randomHeroes = 0;
         int randomObstacles = 0;
+        int tightFormationChance = 0;
+        int randomTerrainChance = 0;
         int townChance = 0;
         int warmachineChance = 0;
         int manaMin = 0;
@@ -116,6 +118,10 @@ namespace ML {
                 "Percent chance to have the combat in a town (no town combat if 0*)")
             ("warmachine-chance", po::value<int>()->value_name("<N>"),
                 "Percent chance to add ballista/tent/cart in combat (no war machines if 0*)")
+            ("tight-formation-chance", po::value<int>()->value_name("<N>"),
+                "Percent chance to set a tight army formation (default 0*)")
+            ("random-terrain-chance", po::value<int>()->value_name("<N>"),
+                "Percent chance to set a random terrain (default 0*)")
             ("mana-min", po::value<int>()->value_name("<N>"),
                 "Minimum mana to give to give each hero at the start of combat (default 0*)")
             ("mana-max", po::value<int>()->value_name("<N>"),
@@ -189,6 +195,12 @@ namespace ML {
 
         if (vm.count("warmachine-chance"))
             warmachineChance = vm.at("warmachine-chance").as<int>();
+
+        if (vm.count("tight-formation-chance"))
+            tightFormationChance = vm.at("tight-formation-chance").as<int>();
+
+        if (vm.count("random-terrain-chance"))
+            randomTerrainChance = vm.at("random-terrain-chance").as<int>();
 
         if (vm.count("mana-min"))
             manaMin = vm.at("mana-min").as<int>();
@@ -283,6 +295,8 @@ namespace ML {
             randomObstacles,
             townChance,
             warmachineChance,
+            tightFormationChance,
+            randomTerrainChance,
             manaMin,
             manaMax,
             swapSides,

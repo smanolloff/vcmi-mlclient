@@ -62,6 +62,8 @@ namespace ML {
             int randomObstacles,
             int townChance,
             int warmachineChance,
+            int tightFormationChance,
+            int randomTerrainChance,
             int manaMin,
             int manaMax,
             int swapSides,
@@ -82,6 +84,8 @@ namespace ML {
           , randomObstacles(randomObstacles)
           , townChance(townChance)
           , warmachineChance(warmachineChance)
+          , tightFormationChance(tightFormationChance)
+          , randomTerrainChance(randomTerrainChance)
           , manaMin(manaMin)
           , manaMax(manaMax)
           , swapSides(swapSides)
@@ -106,6 +110,8 @@ namespace ML {
         const int randomObstacles;
         const int townChance;
         const int warmachineChance;
+        const int tightFormationChance;
+        const int randomTerrainChance;
         const int manaMin;
         const int manaMax;
         const int swapSides;

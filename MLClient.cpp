@@ -279,6 +279,16 @@ namespace ML {
             exit(1);
         }
 
+        if (a.tightFormationChance < 0 || a.tightFormationChance > 100) {
+            std::cerr << "Bad value for tightFormationChance: expected an integer between 0 and 100, got: " << a.tightFormationChance << "\n";
+            exit(1);
+        }
+
+        if (a.randomTerrainChance < 0 || a.randomTerrainChance > 100) {
+            std::cerr << "Bad value for randomTerrainChance: expected an integer between 0 and 100, got: " << a.randomTerrainChance << "\n";
+            exit(1);
+        }
+
         if (a.swapSides < 0) {
             std::cerr << "Bad value for swapSides: expected a non-negative integer, got: " << a.swapSides << "\n";
             exit(1);
@@ -357,6 +367,8 @@ namespace ML {
         Settings(settings.write({"server", "ML", "randomObstacles"}))->Integer() = a.randomObstacles;
         Settings(settings.write({"server", "ML", "townChance"}))->Integer() = a.townChance;
         Settings(settings.write({"server", "ML", "warmachineChance"}))->Integer() = a.warmachineChance;
+        Settings(settings.write({"server", "ML", "tightFormationChance"}))->Integer() = a.tightFormationChance;
+        Settings(settings.write({"server", "ML", "randomTerrainChance"}))->Integer() = a.randomTerrainChance;
         Settings(settings.write({"server", "ML", "manaMin"}))->Integer() = a.manaMin;
         Settings(settings.write({"server", "ML", "manaMax"}))->Integer() = a.manaMax;
         Settings(settings.write({"server", "ML", "swapSides"}))->Integer() = a.swapSides;
