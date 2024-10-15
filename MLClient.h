@@ -64,6 +64,7 @@ namespace ML {
             int warmachineChance,
             int tightFormationChance,
             int randomTerrainChance,
+            std::string battlefieldPattern,
             int manaMin,
             int manaMax,
             int swapSides,
@@ -86,6 +87,7 @@ namespace ML {
           , warmachineChance(warmachineChance)
           , tightFormationChance(tightFormationChance)
           , randomTerrainChance(randomTerrainChance)
+          , battlefieldPattern(battlefieldPattern)
           , manaMin(manaMin)
           , manaMax(manaMax)
           , swapSides(swapSides)
@@ -112,6 +114,7 @@ namespace ML {
         const int warmachineChance;
         const int tightFormationChance;
         const int randomTerrainChance;
+        const std::string battlefieldPattern;
         const int manaMin;
         const int manaMax;
         const int swapSides;

@@ -68,6 +68,7 @@ namespace ML {
         int randomObstacles = 0;
         int tightFormationChance = 0;
         int randomTerrainChance = 0;
+        std::string battlefieldPattern = "";
         int townChance = 0;
         int warmachineChance = 0;
         int manaMin = 0;
@@ -122,6 +123,9 @@ namespace ML {
                 "Percent chance to set a tight army formation (default 0*)")
             ("random-terrain-chance", po::value<int>()->value_name("<N>"),
                 "Percent chance to set a random terrain (default 0*)")
+            ("battlefield-pattern", po::value<std::string>()->value_name("<REGEX>"),
+                "If given, it will be used as a regex pattern for filtering battlefields"
+                "based on their json key (see config/battlefields.json)")
             ("mana-min", po::value<int>()->value_name("<N>"),
                 "Minimum mana to give to give each hero at the start of combat (default 0*)")
             ("mana-max", po::value<int>()->value_name("<N>"),
@@ -201,6 +205,9 @@ namespace ML {
 
         if (vm.count("random-terrain-chance"))
             randomTerrainChance = vm.at("random-terrain-chance").as<int>();
+
+        if (vm.count("battlefield-pattern"))
+            battlefieldPattern = vm.at("battlefield-pattern").as<std::string>();
 
         if (vm.count("mana-min"))
             manaMin = vm.at("mana-min").as<int>();
@@ -297,6 +304,7 @@ namespace ML {
             warmachineChance,
             tightFormationChance,
             randomTerrainChance,
+            battlefieldPattern,
             manaMin,
             manaMax,
             swapSides,

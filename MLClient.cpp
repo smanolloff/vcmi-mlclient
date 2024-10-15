@@ -369,6 +369,7 @@ namespace ML {
         Settings(settings.write({"server", "ML", "warmachineChance"}))->Integer() = a.warmachineChance;
         Settings(settings.write({"server", "ML", "tightFormationChance"}))->Integer() = a.tightFormationChance;
         Settings(settings.write({"server", "ML", "randomTerrainChance"}))->Integer() = a.randomTerrainChance;
+        Settings(settings.write({"server", "ML", "battlefieldPattern"}))->String() = a.battlefieldPattern;
         Settings(settings.write({"server", "ML", "manaMin"}))->Integer() = a.manaMin;
         Settings(settings.write({"server", "ML", "manaMax"}))->Integer() = a.manaMax;
         Settings(settings.write({"server", "ML", "swapSides"}))->Integer() = a.swapSides;
