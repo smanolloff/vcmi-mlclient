@@ -388,7 +388,7 @@ namespace ML {
 
         // Set max difficulty (affects BattleAI number of simulated turns)
         // TODO: make configurable
-        Settings(settings.write({"general", "lastDifficulty"}))->Integer() = 4;
+        Settings(settings.write({"general", "lastDifficulty"}))->Integer() = 3;
 
         // convert to "ai/mymap.vmap" to "maps/ai/mymap.vmap"
         auto mappath = std::filesystem::path("Maps") / std::filesystem::path(a.mapname);
