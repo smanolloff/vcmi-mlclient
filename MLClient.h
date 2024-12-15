@@ -27,6 +27,7 @@ namespace ML {
     constexpr auto AI_BATTLEAI = "BattleAI";
     constexpr auto AI_MMAI_USER = "MMAI_USER"; // for user-provided getAction (gym)
     constexpr auto AI_MMAI_MODEL = "MMAI_MODEL"; // for pre-trained model's getAction
+    constexpr auto AI_MMAI_RANDOM = "MMAI_RANDOM"; // random-acting agent
     constexpr auto AI_MMAI_SCRIPT_SUMMONER = "MMAI_SCRIPT_SUMMONER";
 
     const std::vector<std::string> AIS = {

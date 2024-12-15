@@ -271,7 +271,8 @@ namespace ML {
         std::string leftModelFile = "";
         std::string rightModelFile = "";
 
-        auto autorender = true;
+        // auto autorender = true;
+        auto autorender = false;
 
         if (leftAi == AI_MMAI_USER) {
             leftModel = new UserAgents::AgentV5(benchmark, interactive, autorender, false, recordings);
