@@ -15,30 +15,17 @@
 // =============================================================================
 
 #include <cstdio>
-#include <memory>
 #include <stdexcept>
 #include <string>
 #include <boost/program_options.hpp>
 #include <boost/core/demangle.hpp>
-#include <filesystem>
 
-#include "AI/MMAI/common.h"
 #include "AI/MMAI/schema/base.h"
-#include "ML/model_wrappers/function.h"
 #include "ML/model_wrappers/scripted.h"
 #include "ML/model_wrappers/torchpath.h"
 #include "MLClient.h"
 
-#include "AI/MMAI/schema/schema.h"
-#include "AI/MMAI/schema/v1/types.h"
-#include "AI/MMAI/schema/v1/constants.h"
-
-#include "user_agents/base.h"
-#include "user_agents/agent-v1.h"
-#include "user_agents/agent-v3.h"
-#include "user_agents/agent-v4.h"
-#include "user_agents/agent-v5.h"
-#include "user_agents/agent-v6.h"
+#include "user_agents/agent-v7.h"
 
 
 namespace po = boost::program_options;
@@ -276,7 +263,7 @@ namespace ML {
         auto autorender = false;
 
         if (leftAi == AI_MMAI_USER) {
-            leftModel = new UserAgents::AgentV6(benchmark, interactive, autorender, false, recordings);
+            leftModel = new UserAgents::AgentV7(benchmark, interactive, autorender, false, recordings);
             // prevent double render if both models are MMAI_USER
             autorender = false;
         } else if (leftAi == AI_MMAI_MODEL) {
@@ -287,7 +274,7 @@ namespace ML {
         }
 
         if (rightAi == AI_MMAI_USER) {
-            rightModel = new UserAgents::AgentV6(benchmark, interactive, autorender, false, recordings);
+            rightModel = new UserAgents::AgentV7(benchmark, interactive, autorender, false, recordings);
         } else if (rightAi == AI_MMAI_MODEL) {
             // BAI will load the actual model based on leftModel->getName()
             rightModel = new ModelWrappers::TorchPath(omap.at("right-model"));
