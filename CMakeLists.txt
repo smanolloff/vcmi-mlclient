@@ -17,16 +17,8 @@ add_library(mlclient SHARED
 add_executable(mlclient-cli
   main.cpp
   user_agents/base.h
-  user_agents/agent-v1.cpp
-  user_agents/agent-v1.h
   user_agents/agent-v3.cpp
   user_agents/agent-v3.h
-  user_agents/agent-v4.cpp
-  user_agents/agent-v4.h
-  user_agents/agent-v5.cpp
-  user_agents/agent-v5.h
-  user_agents/agent-v6.cpp
-  user_agents/agent-v6.h
   user_agents/agent-v7.cpp
   user_agents/agent-v7.h
   user_agents/agent-v8.cpp

@@ -17,7 +17,6 @@
 #include "StdInc.h"
 #include "CMT.h"
 #include "AI/MMAI/schema/base.h"
-#include "AI/MMAI/schema/v1/constants.h"
 
 #include <boost/thread.hpp>
 #include <boost/filesystem.hpp>
