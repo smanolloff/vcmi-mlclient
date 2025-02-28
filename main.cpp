@@ -25,7 +25,7 @@
 #include "ML/model_wrappers/torchpath.h"
 #include "MLClient.h"
 
-#include "user_agents/agent-v8.h"
+#include "user_agents/agent-v9.h"
 
 
 namespace po = boost::program_options;
@@ -263,7 +263,7 @@ namespace ML {
         auto autorender = false;
 
         if (leftAi == AI_MMAI_USER) {
-            leftModel = new UserAgents::AgentV8(benchmark, interactive, autorender, false, recordings);
+            leftModel = new UserAgents::AgentV9(benchmark, interactive, autorender, false, recordings);
             // prevent double render if both models are MMAI_USER
             autorender = false;
         } else if (leftAi == AI_MMAI_MODEL) {
@@ -274,7 +274,7 @@ namespace ML {
         }
 
         if (rightAi == AI_MMAI_USER) {
-            rightModel = new UserAgents::AgentV8(benchmark, interactive, autorender, false, recordings);
+            rightModel = new UserAgents::AgentV9(benchmark, interactive, autorender, false, recordings);
         } else if (rightAi == AI_MMAI_MODEL) {
             // BAI will load the actual model based on leftModel->getName()
             rightModel = new ModelWrappers::TorchPath(omap.at("right-model"));

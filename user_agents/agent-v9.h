@@ -20,7 +20,7 @@
 
 namespace ML {
     namespace UserAgents {
-        class AgentV7 : public Base {
+        class AgentV9 : public Base {
         public:
             using Base::Base;
 

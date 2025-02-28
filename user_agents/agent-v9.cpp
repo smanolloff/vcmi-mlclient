@@ -14,27 +14,27 @@
 // limitations under the License.
 // =============================================================================
 
-#include "./agent-v7.h"
+#include "./agent-v9.h"
 #include "AI/MMAI/common.h"
-#include "AI/MMAI/schema/v7/types.h"
+#include "AI/MMAI/schema/v9/types.h"
 
 namespace ML {
     namespace UserAgents {
-        std::string AgentV7::getName() { return "UserAgent (v7)"; };
-        int AgentV7::getVersion() { return 7; };
-        double AgentV7::getValue(const MMAI::Schema::IState * s) { return -666; };
+        std::string AgentV9::getName() { return "UserAgent (v9)"; };
+        int AgentV9::getVersion() { return 9; };
+        double AgentV9::getValue(const MMAI::Schema::IState * s) { return -666; };
 
-        MMAI::Schema::Action AgentV7::getAction(const MMAI::Schema::IState * s) {
+        MMAI::Schema::Action AgentV9::getAction(const MMAI::Schema::IState * s) {
             MMAI::Schema::Action act;
 
-            if (s->version() != 7)
-                throw std::runtime_error("Expected version 7, got: " + std::to_string(s->version()));
+            if (s->version() != 9)
+                throw std::runtime_error("Expected version 9, got: " + std::to_string(s->version()));
 
             auto any = s->getSupplementaryData();
-            auto err = MMAI::Schema::AnyCastError(any, typeid(const MMAI::Schema::V7::ISupplementaryData*));
+            auto err = MMAI::Schema::AnyCastError(any, typeid(const MMAI::Schema::V9::ISupplementaryData*));
             ASSERT(err.empty(), "anycast for getSumpplementaryData error: " + err);
 
-            auto sup = std::any_cast<const MMAI::Schema::V7::ISupplementaryData*>(any);
+            auto sup = std::any_cast<const MMAI::Schema::V9::ISupplementaryData*>(any);
             auto side = static_cast<int>(sup->getSide());
 
             if (steps == 0 && benchmark) {
@@ -43,7 +43,7 @@ namespace ML {
 
             steps++;
 
-            if (sup->getType() == MMAI::Schema::V7::ISupplementaryData::Type::ANSI_RENDER) {
+            if (sup->getType() == MMAI::Schema::V9::ISupplementaryData::Type::ANSI_RENDER) {
                 std::cout << sup->getAnsiRender() << "\n";
                 // use stored mask from pre-render result
                 act = interactive
@@ -92,7 +92,7 @@ namespace ML {
         };
 
 
-        MMAI::Schema::Action AgentV7::promptAction(const MMAI::Schema::ActionMask &mask) {
+        MMAI::Schema::Action AgentV9::promptAction(const MMAI::Schema::ActionMask &mask) {
             int num;
 
             while (true) {
@@ -124,12 +124,12 @@ namespace ML {
             return num == 0 ? randomValidAction(mask) : MMAI::Schema::Action(num);
         }
 
-        MMAI::Schema::Action AgentV7::recordedAction() {
+        MMAI::Schema::Action AgentV9::recordedAction() {
             if (recording_i >= actions.size()) throw std::runtime_error("\n\n*** No more recorded actions in actions.txt ***\n\n");
             return MMAI::Schema::Action(actions[recording_i++]);
         };
 
-        MMAI::Schema::Action AgentV7::randomValidAction(const MMAI::Schema::ActionMask &mask) {
+        MMAI::Schema::Action AgentV9::randomValidAction(const MMAI::Schema::ActionMask &mask) {
             auto validActions = std::vector<MMAI::Schema::Action>{};
 
             for (int j = 1; j < mask.size(); j++) {
@@ -149,7 +149,7 @@ namespace ML {
             return validActions[randomIndex];
         }
 
-        MMAI::Schema::Action AgentV7::firstValidAction(const MMAI::Schema::ActionMask &mask) {
+        MMAI::Schema::Action AgentV9::firstValidAction(const MMAI::Schema::ActionMask &mask) {
             for (int j = 1; j < mask.size(); j++)
                 if (mask[j]) return j;
 
