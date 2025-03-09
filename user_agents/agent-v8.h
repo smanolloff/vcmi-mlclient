@@ -33,6 +33,8 @@ namespace ML {
             unsigned long resets = 0;
             clock_t t0 = 0;
             bool render = false;
+            bool forcerender = false;
+            bool forceretreat = false;
             MMAI::Schema::ActionMask lastmask = {};
             int recording_i = 0;
 

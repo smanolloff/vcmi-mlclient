@@ -41,6 +41,15 @@ namespace ML {
                 t0 = clock();
             }
 
+            if (steps > 0 && steps % 1000 == 0) {
+                printf("WARNING: %lu steps with %lu resets...\n", steps, resets);
+                forcerender = true;
+                if (steps == 5000) {
+                    printf("Looks like a stalemate, will retreat\n");
+                    forceretreat = true;
+                }
+            }
+
             steps++;
 
             if (sup->getType() == MMAI::Schema::V8::ISupplementaryData::Type::ANSI_RENDER) {
@@ -51,14 +60,16 @@ namespace ML {
                     : (actions.empty() ? randomValidAction(lastmask) : recordedAction());
 
                 render = false;
-            } else if (!benchmark && !render) {
+            } else if (forcerender || (!benchmark && !render)) {
+                forcerender = false;
                 logAi->debug("Side: %d", side);
                 render = true;
                 // store mask of this result for the next action
                 lastmask = s->getActionMask();
                 act = MMAI::Schema::ACTION_RENDER_ANSI;
-            } else if (sup->getIsBattleEnded()) {
+            } else if (sup->getIsBattleEnded() || forceretreat) {
                 resets++;
+                forceretreat = false;
 
                 switch (resets % 4) {
                 case 0: printf("\r|"); break;
