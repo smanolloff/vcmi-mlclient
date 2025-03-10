@@ -60,7 +60,7 @@ namespace ML {
                     : (actions.empty() ? randomValidAction(lastmask) : recordedAction());
 
                 render = false;
-            } else if (forcerender || (!benchmark && !render)) {
+            } else if (forcerender || (!benchmark && !render && autorender)) {
                 forcerender = false;
                 logAi->debug("Side: %d", side);
                 render = true;

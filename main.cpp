@@ -66,6 +66,7 @@ namespace ML {
         bool benchmark = false;
         bool interactive = false;
         bool prerecorded = false;
+        bool autorender = false;
         int statsTimeout = 60000;
         int statsPersistFreq = 0;
         bool headless = false;
@@ -141,6 +142,8 @@ namespace ML {
                 "Replay actions from local file named actions.txt")
             ("benchmark", po::bool_switch(&benchmark),
                 "Measure performance")
+            ("auto-render", po::bool_switch(&autorender),
+                "Render each step")
             ("stats-mode", po::value<std::string>()->value_name("<MODE>"),
                 ("Stats collection mode. " + values(STATPERSPECTIVES, omap.at("stats-mode"))).c_str())
             ("stats-storage", po::value<std::string>()->value_name("<PATH>"),
@@ -258,9 +261,6 @@ namespace ML {
         MMAI::Schema::IModel * rightModel = nullptr;
         std::string leftModelFile = "";
         std::string rightModelFile = "";
-
-        // auto autorender = true;
-        auto autorender = false;
 
         if (leftAi == AI_MMAI_USER) {
             leftModel = new UserAgents::AgentV8(benchmark, interactive, autorender, false, recordings);
