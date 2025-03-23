@@ -25,6 +25,8 @@ add_executable(mlclient-cli
   user_agents/agent-v8.h
   user_agents/agent-v9.cpp
   user_agents/agent-v9.h
+  user_agents/agent-v10.cpp
+  user_agents/agent-v10.h
 )
 
 add_dependencies(mlclient-cli mlclient)
