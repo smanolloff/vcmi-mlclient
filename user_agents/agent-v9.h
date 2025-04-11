@@ -33,13 +33,13 @@ namespace ML {
             unsigned long resets = 0;
             clock_t t0 = 0;
             bool render = false;
-            MMAI::Schema::ActionMask lastmask = {};
+            const MMAI::Schema::ActionMask* lastmask = nullptr;
             int recording_i = 0;
 
-            MMAI::Schema::Action promptAction(const MMAI::Schema::ActionMask &mask);
+            MMAI::Schema::Action promptAction(const MMAI::Schema::ActionMask* mask);
             MMAI::Schema::Action recordedAction();
-            MMAI::Schema::Action randomValidAction(const MMAI::Schema::ActionMask &mask);
-            MMAI::Schema::Action firstValidAction(const MMAI::Schema::ActionMask &mask);
+            MMAI::Schema::Action randomValidAction(const MMAI::Schema::ActionMask* mask);
+            MMAI::Schema::Action firstValidAction(const MMAI::Schema::ActionMask* mask);
         };
     }
 }

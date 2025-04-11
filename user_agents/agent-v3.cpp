@@ -92,7 +92,7 @@ namespace ML {
         };
 
 
-        MMAI::Schema::Action AgentV3::promptAction(const MMAI::Schema::ActionMask &mask) {
+        MMAI::Schema::Action AgentV3::promptAction(const MMAI::Schema::ActionMask* mask) {
             int num;
 
             while (true) {
@@ -129,11 +129,11 @@ namespace ML {
             return MMAI::Schema::Action(actions[recording_i++]);
         };
 
-        MMAI::Schema::Action AgentV3::randomValidAction(const MMAI::Schema::ActionMask &mask) {
+        MMAI::Schema::Action AgentV3::randomValidAction(const MMAI::Schema::ActionMask* mask) {
             auto validActions = std::vector<MMAI::Schema::Action>{};
 
-            for (int j = 1; j < mask.size(); j++) {
-                if (mask[j])
+            for (int j = 1; j < mask->size(); j++) {
+                if ((*mask)[j])
                     validActions.push_back(j);
             }
 
@@ -149,9 +149,9 @@ namespace ML {
             return validActions[randomIndex];
         }
 
-        MMAI::Schema::Action AgentV3::firstValidAction(const MMAI::Schema::ActionMask &mask) {
-            for (int j = 1; j < mask.size(); j++)
-                if (mask[j]) return j;
+        MMAI::Schema::Action AgentV3::firstValidAction(const MMAI::Schema::ActionMask* mask) {
+            for (int j = 1; j < mask->size(); j++)
+                if ((*mask)[j]) return j;
 
             return -5;
         }
