@@ -55,6 +55,7 @@ namespace ML {
         int seed = 0;
         int randomHeroes = 0;
         int randomObstacles = 0;
+        int randomStackChance = 0;
         int tightFormationChance = 0;
         int randomTerrainChance = 0;
         std::string battlefieldPattern = "";
@@ -109,6 +110,8 @@ namespace ML {
                 "Percent chance to have the combat in a town (no town combat if 0*)")
             ("warmachine-chance", po::value<int>()->value_name("<N>"),
                 "Percent chance to add ballista/tent/cart in combat (no war machines if 0*)")
+            ("random-stack-chance", po::value<int>()->value_name("<N>"),
+                "Percent chance to set a random stack for each of the 7 hero slots (default 0*)")
             ("tight-formation-chance", po::value<int>()->value_name("<N>"),
                 "Percent chance to set a tight army formation (default 0*)")
             ("random-terrain-chance", po::value<int>()->value_name("<N>"),
@@ -191,6 +194,9 @@ namespace ML {
 
         if (vm.count("warmachine-chance"))
             warmachineChance = vm.at("warmachine-chance").as<int>();
+
+        if (vm.count("random-stack-chance"))
+            randomStackChance = vm.at("random-stack-chance").as<int>();
 
         if (vm.count("tight-formation-chance"))
             tightFormationChance = vm.at("tight-formation-chance").as<int>();
@@ -292,6 +298,7 @@ namespace ML {
             randomObstacles,
             townChance,
             warmachineChance,
+            randomStackChance,
             tightFormationChance,
             randomTerrainChance,
             battlefieldPattern,

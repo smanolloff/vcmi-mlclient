@@ -278,6 +278,11 @@ namespace ML {
             exit(1);
         }
 
+        if (a.randomStackChance < 0 || a.randomStackChance > 100) {
+            std::cerr << "Bad value for randomStackChance: expected an integer between 0 and 100, got: " << a.randomStackChance << "\n";
+            exit(1);
+        }
+
         if (a.tightFormationChance < 0 || a.tightFormationChance > 100) {
             std::cerr << "Bad value for tightFormationChance: expected an integer between 0 and 100, got: " << a.tightFormationChance << "\n";
             exit(1);
@@ -366,6 +371,7 @@ namespace ML {
         Settings(settings.write({"server", "ML", "randomObstacles"}))->Integer() = a.randomObstacles;
         Settings(settings.write({"server", "ML", "townChance"}))->Integer() = a.townChance;
         Settings(settings.write({"server", "ML", "warmachineChance"}))->Integer() = a.warmachineChance;
+        Settings(settings.write({"server", "ML", "randomStackChance"}))->Integer() = a.randomStackChance;
         Settings(settings.write({"server", "ML", "tightFormationChance"}))->Integer() = a.tightFormationChance;
         Settings(settings.write({"server", "ML", "randomTerrainChance"}))->Integer() = a.randomTerrainChance;
         Settings(settings.write({"server", "ML", "battlefieldPattern"}))->String() = a.battlefieldPattern;

@@ -62,6 +62,7 @@ namespace ML {
             int randomObstacles,
             int townChance,
             int warmachineChance,
+            int randomStackChance,
             int tightFormationChance,
             int randomTerrainChance,
             std::string battlefieldPattern,
@@ -85,6 +86,7 @@ namespace ML {
           , randomObstacles(randomObstacles)
           , townChance(townChance)
           , warmachineChance(warmachineChance)
+          , randomStackChance(randomStackChance)
           , tightFormationChance(tightFormationChance)
           , randomTerrainChance(randomTerrainChance)
           , battlefieldPattern(battlefieldPattern)
@@ -112,6 +114,7 @@ namespace ML {
         const int randomObstacles;
         const int townChance;
         const int warmachineChance;
+        const int randomStackChance;
         const int tightFormationChance;
         const int randomTerrainChance;
         const std::string battlefieldPattern;
