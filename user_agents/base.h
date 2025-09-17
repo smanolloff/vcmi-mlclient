@@ -34,6 +34,7 @@ namespace ML {
             int getVersion() override { return 0; };
             int getAction(const MMAI::Schema::IState * s) override { return 0; };
             double getValue(const MMAI::Schema::IState * s) override { return 0; };
+            MMAI::Schema::Side getSide() override { return MMAI::Schema::Side::BOTH; };
         protected:
             const bool autorender;
             const bool benchmark;  // obsoletes all options below, always picks random actions

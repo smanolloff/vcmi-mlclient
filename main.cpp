@@ -277,7 +277,7 @@ namespace ML {
             // BAI will load the actual model based on leftModel->getName()
             leftModel = new ModelWrappers::TorchPath(omap.at("left-model"));
         } else {
-            leftModel = new ModelWrappers::Scripted(leftAi);
+            leftModel = new ModelWrappers::Scripted(leftAi, MMAI::Schema::Side::LEFT);
         }
 
         if (rightAi == AI_MMAI_USER) {
@@ -286,7 +286,7 @@ namespace ML {
             // BAI will load the actual model based on leftModel->getName()
             rightModel = new ModelWrappers::TorchPath(omap.at("right-model"));
         } else {
-            rightModel = new ModelWrappers::Scripted(rightAi);
+            rightModel = new ModelWrappers::Scripted(rightAi, MMAI::Schema::Side::RIGHT);
         }
 
         return InitArgs(

@@ -20,8 +20,9 @@
 
 namespace ML {
     namespace ModelWrappers {
-        Scripted::Scripted(std::string name)
-        : name(name) {
+        Scripted::Scripted(std::string name, MMAI::Schema::Side side)
+        : name(name)
+        , side(side) {
             auto it = std::find(AIS.begin(), AIS.end(), name);
             if (it == AIS.end()) {
                 throw std::runtime_error("Unsupported scripted AI name: " + name);
@@ -31,6 +32,10 @@ namespace ML {
         std::string Scripted::getName() {
             return name;
         };
+
+        MMAI::Schema::Side Scripted::getSide() {
+            return side;
+        }
 
         MMAI::Schema::ModelType Scripted::getType() {
             return MMAI::Schema::ModelType::SCRIPTED;

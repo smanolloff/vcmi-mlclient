@@ -25,15 +25,17 @@ namespace ML {
         // (the library is dynamically loaded later)
         class MMAI_DLL_LINKAGE Scripted : public MMAI::Schema::IModel {
         public:
-            Scripted(std::string name);
+            Scripted(std::string name, MMAI::Schema::Side side);
 
             MMAI::Schema::ModelType getType() override;
             std::string getName() override;
             int getVersion() override;
             int getAction(const MMAI::Schema::IState * s) override;
             double getValue(const MMAI::Schema::IState * s) override;
+            MMAI::Schema::Side getSide() override;
         private:
             std::string name;
+            MMAI::Schema::Side side;
             void warn(std::string m, int retval);
         };
     }

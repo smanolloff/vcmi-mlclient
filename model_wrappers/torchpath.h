@@ -27,6 +27,7 @@ namespace ML {
             MMAI::Schema::ModelType getType() override;
             std::string getName() override;
             int getVersion() override;
+            MMAI::Schema::Side getSide() override;
             int getAction(const MMAI::Schema::IState * s) override;
             double getValue(const MMAI::Schema::IState * s) override;
         private:

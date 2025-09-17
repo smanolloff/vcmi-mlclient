@@ -52,6 +52,11 @@ namespace ML {
             return -666;
         };
 
+        MMAI::Schema::Side TorchPath::getSide() {
+            warn("getSide", -666);
+            return MMAI::Schema::Side(666);
+        }
+
         void TorchPath::warn(std::string m, int retval) {
             printf("WARNING: method %s called on a ModelWrapper object; returning %d\n", m.c_str(), retval);
         }

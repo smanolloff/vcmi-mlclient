@@ -21,10 +21,12 @@ namespace ML {
         Function::Function(
             int version,
             std::string name,
+            MMAI::Schema::Side side,
             std::function<int(const MMAI::Schema::IState*)> f_getAction,
             std::function<double(const MMAI::Schema::IState*)> f_getValue
         ) : version(version)
           , name(name)
+          , side(side)
           , f_getAction(f_getAction)
           , f_getValue(f_getValue) {};
 
@@ -38,6 +40,10 @@ namespace ML {
 
         int Function::getVersion() {
             return version;
+        }
+
+        MMAI::Schema::Side Function::getSide() {
+            return side;
         }
 
         int Function::getAction(const MMAI::Schema::IState * s) {
