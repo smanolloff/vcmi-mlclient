@@ -15,6 +15,7 @@
 // =============================================================================
 
 #include "StdInc.h"
+#include "AsyncRunner.h"
 #include "CMT.h"
 #include "AI/MMAI/schema/base.h"
 
@@ -25,50 +26,49 @@
 
 #include "AI/MMAI/schema/schema.h"
 #include "ExceptionsCommon.h"
+#include "GameLibrary.h"
 #include "MLClient.h"
 
 #include "lib/filesystem/Filesystem.h"
 #include "lib/texts/CGeneralTextHandler.h"
 #include "lib/VCMIDirs.h"
-#include "lib/VCMI_Lib.h"
 #include "lib/CConfigHandler.h"
 
 #include "lib/logging/CBasicLogConfigurator.h"
 
 #include "client/StdInc.h"
-#include "client/CGameInfo.h"
 #include "lib/filesystem/Filesystem.h"
 #include "lib/logging/CBasicLogConfigurator.h"
 #include "lib/CConsoleHandler.h"
 #include "lib/VCMIDirs.h"
-#include "mainmenu/CMainMenu.h"
 #include "media/CEmptyVideoPlayer.h"
 #include "media/CMusicHandler.h"
 #include "media/CSoundHandler.h"
 #include "media/CVideoHandler.h"
-#include "client/gui/CGuiHandler.h"
-#include "client/windows/CMessage.h"
 #include "client/CServerHandler.h"
-#include "client/ClientCommandManager.h"
+#include "GameEngine.h"
+#include "GameInstance.h"
 #include "client/gui/CursorHandler.h"
 #include "client/eventsSDL/InputHandler.h"
 #include "client/render/Graphics.h"
 #include "client/render/IScreenHandler.h"
 #include "client/CPlayerInterface.h"
 #include "client/gui/WindowHandler.h"
+#include "client/mainmenu/CMainMenu.h"
 
 #include "lib/filesystem/Filesystem.h"
 #include "lib/texts/CGeneralTextHandler.h"
 #include "lib/VCMIDirs.h"
-#include "lib/VCMI_Lib.h"
 #include "lib/CConfigHandler.h"
 #include "render/IRenderHandler.h"
 #include "vstd/CLoggerBase.h"
 #include "windows/InfoWindows.h"
+#include "windows/CMessage.h"
 
 static std::optional<std::string> criticalInitializationError;
 std::atomic<bool> headlessQuit = false;
 CBasicLogConfigurator *logConfig;
+CConsoleHandler *console;
 
 bool headless;
 std::mutex mutex_shutdown;
@@ -90,42 +90,6 @@ MMAI::Schema::Baggage * baggage;
 #error "Unsupported OS"
 #endif
 
-[[noreturn]] static void quitApplicationImmediately(int error_code)
-{
-    // Perform quick exit without executing static destructors and let OS cleanup anything that we did not
-    // We generally don't care about them and this leads to numerous issues, e.g.
-    // destruction of locked mutexes (fails an assertion), even in third-party libraries (as well as native libs on Android)
-    // Android - std::quick_exit is available only starting from API level 21
-    // Mingw, macOS and iOS - std::quick_exit is unavailable (at least in current version of CI)
-#if (defined(__ANDROID_API__) && __ANDROID_API__ < 21) || (defined(__MINGW32__)) || defined(VCMI_APPLE)
-    ::exit(error_code);
-#else
-    std::quick_exit(error_code);
-#endif
-}
-
-void handleQuit(bool ask)
-{
-    if(!ask)
-    {
-        ML::shutdown_vcmi();
-        return;
-    }
-
-    // FIXME: avoids crash if player attempts to close game while opening is still playing
-    // use cursor handler as indicator that loading is not done yet
-    // proper solution would be to abort init thread (or wait for it to finish)
-    if (!CCS->curh)
-    {
-        ML::shutdown_vcmi();
-    }
-
-    if (LOCPLINT)
-        LOCPLINT->showYesNoDialog(CGI->generaltexth->allTexts[69], ML::shutdown_vcmi, nullptr);
-    else
-        CInfoWindow::showYesNoDialog(CGI->generaltexth->allTexts[69], {}, ML::shutdown_vcmi, {}, PlayerColor(1));
-}
-
 /// Notify user about encountered fatal error and terminate the game
 /// TODO: decide on better location for this method
 void handleFatalError(const std::string & message, bool terminate)
@@ -140,7 +104,7 @@ void handleFatalError(const std::string & message, bool terminate)
     if (terminate)
         throw std::runtime_error(message);
     else
-        quitApplicationImmediately(1);
+        ::exit(1);
 }
 
 namespace ML {
@@ -149,56 +113,8 @@ namespace ML {
         cond_shutdown.notify_all();
         flag_shutdown = true;
 
-        CSH->endNetwork();
-
-        if(!settings["session"]["headless"].Bool())
-        {
-            if(CSH->client)
-                CSH->endGameplay();
-
-            GH.windows().clear();
-        }
-
-        vstd::clear_pointer(CSH);
-
-        CMM.reset();
-
-        if(!settings["session"]["headless"].Bool())
-        {
-            // cleanup, mostly to remove false leaks from analyzer
-            if(CCS)
-            {
-                delete CCS->consoleh;
-                delete CCS->curh;
-                delete CCS->videoh;
-                delete CCS->musich;
-                delete CCS->soundh;
-
-                vstd::clear_pointer(CCS);
-            }
-            CMessage::dispose();
-
-            vstd::clear_pointer(graphics);
-        }
-
-        vstd::clear_pointer(VLC);
-
-        // sometimes leads to a hang. TODO: investigate
-        //vstd::clear_pointer(console);// should be removed after everything else since used by logging
-
-        if(!settings["session"]["headless"].Bool())
-            GH.screenHandler().close();
-
-        if(logConfig != nullptr)
-        {
-            logConfig->deconfigure();
-            delete logConfig;
-            logConfig = nullptr;
-        }
-
-        if(!settings["session"]["headless"].Bool()) {
-            quitApplicationImmediately(0);
-        }
+        // XXX: start in a thread?
+        GAME->onShutdownRequested(false);
     }
 
     void validateValue(std::string name, std::string value, std::vector<std::string> values) {
@@ -457,14 +373,19 @@ namespace ML {
         // chdir needed for VCMI init
         fs::current_path(fs::path(VCMI_BIN_DIR));
         std::cout.flags(std::ios::unitbuf);
-        console = new CConsoleHandler();
+
+        auto callbackFunction = [](std::string buffer, bool calledFromIngameConsole) {};
+
+        console = new CConsoleHandler(callbackFunction);
+        console->start();
 
         const boost::filesystem::path logPath = VCMIDirs::get().userLogsPath() / "VCMI_Client_log.txt";
         logConfig = new CBasicLogConfigurator(logPath, console);
         logConfig->configureDefault();
 
         // XXX: apparently this needs to be invoked before Settings() stuff
-        preinitDLL(::console, false);
+        LIBRARY = new GameLibrary;
+        LIBRARY->initializeFilesystem(false);
 
         // validating after preinitDLL as the VCMIDirs are not initialized before it
         validateArguments(a);
@@ -490,40 +411,28 @@ namespace ML {
         logConfig->configure();
         // logGlobal->debug("settings = %s", settings.toJsonNode().toJson());
 
-        srand ( (unsigned int)time(nullptr) );
-
-        if (!headless)
-            GH.init();
-
-        CCS = new CClientState();
-        CGI = new CGameInfo(); //contains all global informations about game (texts, lodHandlers, map handler etc.)
+        // if (!headless)
+            ENGINE = std::make_unique<GameEngine>(headless);
 
         auto aco = AICombatOptions();
         aco.other = std::make_any<MMAI::Schema::Baggage*>(baggage);
-        CSH = new CServerHandler(aco);
+        GAME = std::make_unique<GameInstance>(aco);
 
-        if (!headless) {
-            CCS->videoh = new CEmptyVideoPlayer();
-            CCS->soundh = new CSoundHandler();
-            CCS->soundh->setVolume((ui32)settings["general"]["sound"].Float());
-            CCS->musich = new CMusicHandler();
-            CCS->musich->setVolume((ui32)settings["general"]["music"].Float());
-        }
+        if (ENGINE)
+            ENGINE->setEngineUser(GAME.get());
 
         boost::thread loading([]() {
-            CStopWatch tmh;
             try
             {
-                loadDLLClasses(true);
-                CGI->setFromLib();
+                CStopWatch tmh;
+                LIBRARY->initializeLibrary();
+                logGlobal->info("Initializing VCMI_Lib: %d ms", tmh.getDiff());
             }
             catch (const DataLoadingException & e)
             {
                 criticalInitializationError = e.what();
                 return;
             }
-
-            logGlobal->info("Initializing VCMI_Lib: %d ms", tmh.getDiff());
         });
         loading.join();
 
@@ -535,12 +444,14 @@ namespace ML {
             throw std::runtime_error(msg);
         }
 
-        if (!headless) {
+        if (!headless)
+        {
+            ENGINE->init();
             graphics = new Graphics(); // should be before curh
-            GH.renderHandler().onLibraryLoadingFinished(CGI);
-            CCS->curh = new CursorHandler();
+            ENGINE->renderHandler().onLibraryLoadingFinished(LIBRARY);
             CMessage::init();
-            CCS->curh->show();
+            ENGINE->cursor().init();
+            ENGINE->cursor().show();
         }
     }
 
@@ -555,21 +466,45 @@ namespace ML {
         logGlobal->info("onlyai -> " + std::to_string(settings["session"]["onlyai"].Bool()));
         logGlobal->info("quickCombat -> " + std::to_string(settings["adventure"]["quickCombat"].Bool()));
 
-        auto t = boost::thread(&CServerHandler::debugStartTest, CSH, mapname, false);
+        GAME->server().debugStartTest(mapname, false);
 
-        if(headless)
-         {
-            auto l = std::unique_lock(mutex_shutdown);
-            cond_shutdown.wait(l);
-            std::cout << "VCMI shutdown complete.\n";
-            t.join();
-        } else {
-            GH.screenHandler().clearScreen();
-            while(!flag_shutdown) {
-                GH.input().fetchEvents();
-                GH.renderFrame();
+        try {
+            if(headless)
+             {
+                auto l = std::unique_lock(mutex_shutdown);
+                cond_shutdown.wait(l);
+                std::cout << "VCMI shutdown complete.\n";
+            } else {
+                GAME->mainmenu()->makeActiveInterface();
+                ENGINE->mainLoop();
             }
-            quitApplicationImmediately(0);
+        } catch (const GameShutdownException & ) {
+            // no-op - just break out of main loop
+            logGlobal->info("Main loop termination requested");
         }
-    }
+
+        GAME->server().endNetwork();
+        if(!headless) {
+            if(GAME->server().client)
+                GAME->server().endGameplay();
+            if (ENGINE)
+                ENGINE->windows().clear();
+        }
+        GAME.reset();
+
+        if(!headless) {
+            CMessage::dispose();
+            delete graphics;
+            graphics = nullptr;
+        }
+        // must be executed before reset - since unique_ptr resets pointer to null before calling destructor
+        ENGINE->async().wait();
+        ENGINE.reset();
+        delete LIBRARY;
+        LIBRARY = nullptr;
+        logConfig->deconfigure();
+        delete logConfig;
+        delete console;
+        std::cout << "Ending...\n";
+   }
 }

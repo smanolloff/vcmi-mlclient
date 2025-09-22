@@ -91,7 +91,7 @@ namespace ML {
         usage << "Usage: " << argv[0] << " [options]\n\n";
         usage << "Available options (* denotes default value)";
 
-        auto opts = po::options_description(usage.str(), 0);
+        auto opts = po::options_description(usage.str(), 120);
 
         opts.add_options()
             ("help,h", "Show this help")
@@ -118,7 +118,7 @@ namespace ML {
             ("random-terrain-chance", po::value<int>()->value_name("<N>"),
                 "Percent chance to set a random terrain (default 0*)")
             ("battlefield-pattern", po::value<std::string>()->value_name("<REGEX>"),
-                "If given, it will be used as a regex pattern for filtering battlefields"
+                "If given, it will be used as a regex pattern for filtering battlefields "
                 "based on their json key (see config/battlefields.json)")
             ("mana-min", po::value<int>()->value_name("<N>"),
                 "Minimum mana to give to give each hero at the start of combat (default 0*)")
